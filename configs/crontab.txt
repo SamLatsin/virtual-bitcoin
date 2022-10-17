@@ -1,0 +1,6 @@
+*/10 * * * * curl 'http://127.0.0.1/api/cron/recover' -X 'POST'
+* * * * * curl 'http://127.0.0.1/api/cron/check/process/btc' -X 'POST'
+
+* * * * * ( curl 'http://127.0.0.1/api/cron/check/balances/btc' -X 'POST' )
+* * * * * ( sleep 20 ; curl 'http://127.0.0.1/api/cron/check/balances/btc' -X 'POST' )
+* * * * * ( sleep 40 ; curl 'http://127.0.0.1/api/cron/check/balances/btc' -X 'POST' )
