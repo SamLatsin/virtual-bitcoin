@@ -59,7 +59,8 @@ Edit file `/var/www/crypto-rest-api/app/app.php` and put your Database credentia
 
 Edit file `/var/www/crypto-rest-api/app/route/load.php` and generate Bitcoin token.
 
-After all steps done you can check if API works. <!---, check [API documentation](https://sam-latsin.gitbook.io/crypto-rest-api-eng/). --->
+After all steps done you can check if API works. 
+<!--- , check [API documentation](https://sam-latsin.gitbook.io/crypto-rest-api-eng/). --->
 
 ## License
 
