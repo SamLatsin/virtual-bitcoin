@@ -3,8 +3,7 @@ Implementation of crypto-nodes with no fee between same wallet. Based on my old 
 
 ## Overview
 
-Bitcoin node API written in [PHP](https://www.php.net) [Phalcon](https://phalcon.io/en-us), persistant storage is [MySQL](https://www.mysql.com). 
-<!--- See [API documentation](https://sam-latsin.gitbook.io/crypto-rest-api-eng/). --->
+Bitcoin node API written in [PHP](https://www.php.net) [Phalcon](https://phalcon.io/en-us), persistant storage is [MySQL](https://www.mysql.com). See [API documentation](https://sam-latsin.gitbook.io/virtual-btc-api-eng/).
 ### Use cases
 * Crypto P2P exchange
 * Online marketplace
@@ -59,8 +58,7 @@ Edit file `/var/www/crypto-rest-api/app/app.php` and put your Database credentia
 
 Edit file `/var/www/crypto-rest-api/app/route/load.php` and generate Bitcoin token.
 
-After all steps done you can check if API works. 
-<!--- , check [API documentation](https://sam-latsin.gitbook.io/crypto-rest-api-eng/). --->
+After all steps done you can check if API works, check [API documentation](https://sam-latsin.gitbook.io/virtual-btc-api-eng/).
 
 ## License
 
