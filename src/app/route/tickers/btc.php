@@ -11,7 +11,7 @@ function createWalletBTC($app) {
 	else {
 		$name = "w1";
 	}
-	$debug  = sendRPC("createwallet", [$name],                    "localhost:8332/");
+	$debug  = sendRPC("createwallet", [$name, false, true, null, false, false],                    "localhost:8332/");
 	$debug2 = sendRPC("sethdseed",    [true, trim($private_key)], "localhost:8332/wallet/".$name);
 	$debug3 = sendRPC("unloadwallet", [$name],                    "localhost:8332/");
 	$random = new \Phalcon\Security\Random();
@@ -78,6 +78,9 @@ function getAddressBalanceBTC($app) {
 	$address = $app['request']->get('address',null,null,true);
 	if ($wallet) {
 		$wallet = $wallet[0];
+		$token = $app['request']->get('walletToken',null,null,true);
+		checkWalletToken($wallet, $token, $app);
+		checkIsRecoveringBTC($app, $wallet['name']);
 		updateBalance($name, $app);
 		$balance = $app["BtcAddress"]->getBtcAddressesByNameAndAddress($name, $address);
 		if ($balance) {
@@ -115,9 +118,6 @@ function getConfirmations($txid) {
 }
 
 function updateBalance($name, $app) {
-	if (!$name) {
-		return;
-	}
 	$transactions = $app["Transaction"]->getTransactionsToSyncByName($name);
 	$addresses = $app["BtcAddress"]->getBtcAddressByName($name);
 	foreach ($transactions as $key => $transaction) {
@@ -500,7 +500,6 @@ function sendBTC($app) {
 		else {
 			$to_wallet = null;
 		}
-
 		$fields = [
 			"fromWallet"=>$name,
 			"toWallet"=>$to_wallet,
@@ -597,15 +596,12 @@ function recoverWalletBTC($app, $mask = "r", $start_height = "337122", $key = nu
 		if (count(explode(" ", $key)) > 3) {
 			$mnemonic = $key;
 			$private_key = shell_exec('echo "'.$mnemonic.'" | bx mnemonic-to-seed | bx hd-new | bx hd-to-ec | bx ec-to-wif');
-			// var_dump($private_key);
 		}
 		else {
 			$mnemonic = null;
 			$private_key = $key;
-			// var_dump($private_key);
 		}
 		$dup = $app["Wallet"]->getWalletByTickerAndKey("BTC", $private_key);
-		// var_dump($dup);
 		if ($dup) {
 			if (count($dup) == 1) {
 				if ($dup[0]['name'][0] == "f") {
@@ -645,10 +641,10 @@ function recoverWalletBTC($app, $mask = "r", $start_height = "337122", $key = nu
 		// $private_key = shell_exec('echo "'.$mnemonic.'" | bx mnemonic-to-seed | bx hd-new | bx hd-to-ec | bx ec-to-wif -v 239'); //-v 239 for testnet
 	}
 	if ($mask == "fr") {
-		$debug  = sendRPC("createwallet",     [$name, null, null, null, null, null, true],                    "localhost:8332/");
+		$debug  = sendRPC("createwallet",     [$name, null, null, null, null, fales, true],                    "localhost:8332/");
 	}
 	else {
-		$debug  = sendRPC("createwallet",     [$name],                    "localhost:8332/");
+		$debug  = sendRPC("createwallet",     [$name, null, null, null, null, fales],                    "localhost:8332/");
 	}
 	$debug2 = sendRPC("sethdseed",        [true, trim($private_key)], "localhost:8332/wallet/".$name);
 	$debug2 = json_decode($debug2, true);
@@ -878,6 +874,7 @@ function checkParsedBalancesBTC($app) {
 			// $debug1 = sendRPC("loadwallet", [$wallet['name']], "localhost:8332/"); // test
 			$balance = sendRPC("getwalletinfo", [], "localhost:8332/wallet/".$wallet['name']);
 			$balance = json_decode($balance, true);
+			$balance = $balance['result']['balance'];
 			$balance = round($balance,8);
 			if ($balance > 0) {
 				// send to wallet
